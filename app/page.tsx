@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { roleDescriptions, roleLabels, sampleInputs } from "./lib/samples";
 import type { AnalysisResult, Attempt, InterviewInput, PrepDraft, RoleMode, UploadedJobDocument } from "./types";
 
@@ -86,7 +86,11 @@ export default function Home() {
   const [jobDocument, setJobDocument] = useState<UploadedJobDocument | null>(null);
   const [jobDocumentStatus, setJobDocumentStatus] = useState("");
   const [responseMode, setResponseMode] = useState<"gemini" | "fallback" | null>(null);
+  const [ttsAvailable, setTtsAvailable] = useState(false);
+  const [avatarSpeaking, setAvatarSpeaking] = useState(false);
+  const [avatarStatus, setAvatarStatus] = useState("AI面接官は待機中です。");
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   const selectedRoleDescription = roleDescriptions[input.role];
 
@@ -105,6 +109,26 @@ export default function Home() {
     (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
   const isSecureForVoice = isBrowser && (window.isSecureContext || isLocalhost);
   const voiceAvailable = speechSupported && isSecureForVoice;
+
+  useEffect(() => {
+    const supported =
+      typeof window !== "undefined" &&
+      "speechSynthesis" in window &&
+      "SpeechSynthesisUtterance" in window;
+
+    setTtsAvailable(supported);
+    setAvatarStatus(
+      supported
+        ? "AI面接官の音声読み上げが使えます。"
+        : "このブラウザではAI面接官の音声読み上げが使えません。"
+    );
+
+    return () => {
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   function update<K extends keyof InterviewInput>(key: K, value: InterviewInput[K]) {
     setInput((current) => ({ ...current, [key]: value }));
@@ -135,6 +159,77 @@ export default function Home() {
   function goToStep(step: StepId) {
     setCurrentStep(step);
     setError("");
+  }
+
+  function stopInterviewerSpeech() {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+
+    utteranceRef.current = null;
+    setAvatarSpeaking(false);
+  }
+
+  function speakInterviewerQuestion(text = interviewQuestion) {
+    const question = text.trim();
+
+    if (!question) {
+      setAvatarStatus("読み上げる質問がまだありません。");
+      return;
+    }
+
+    if (
+      typeof window === "undefined" ||
+      !("speechSynthesis" in window) ||
+      !("SpeechSynthesisUtterance" in window)
+    ) {
+      setTtsAvailable(false);
+      setAvatarSpeaking(false);
+      setAvatarStatus("このブラウザではAI面接官の音声読み上げが使えません。");
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(question);
+    utterance.lang = "ja-JP";
+    utterance.rate = 0.94;
+    utterance.pitch = 0.96;
+    utterance.volume = 1;
+
+    const japaneseVoice = window.speechSynthesis
+      .getVoices()
+      .find((voice) => voice.lang.toLowerCase().startsWith("ja"));
+
+    if (japaneseVoice) {
+      utterance.voice = japaneseVoice;
+    }
+
+    utterance.onstart = () => {
+      setAvatarSpeaking(true);
+      setAvatarStatus("AI面接官が質問を読み上げています。");
+    };
+    utterance.onend = () => {
+      utteranceRef.current = null;
+      setAvatarSpeaking(false);
+      setAvatarStatus("読み上げ完了。回答を録音または入力してください。");
+    };
+    utterance.onerror = () => {
+      utteranceRef.current = null;
+      setAvatarSpeaking(false);
+      setAvatarStatus("音声読み上げに失敗しました。ボタンからもう一度試してください。");
+    };
+
+    utteranceRef.current = utterance;
+    setAvatarStatus("AI面接官の音声を準備しています。");
+    window.speechSynthesis.speak(utterance);
+
+    window.setTimeout(() => {
+      if (utteranceRef.current === utterance && !window.speechSynthesis.speaking) {
+        setAvatarSpeaking(false);
+        setAvatarStatus("自動読み上げが始まらない場合は「質問を読み上げる」を押してください。");
+      }
+    }, 900);
   }
 
   function readAsDataUrl(file: File) {
@@ -181,6 +276,7 @@ export default function Home() {
       setSessionStarted(true);
       setResponseMode(payload.mode);
       setCurrentStep("interview");
+      setTimeout(() => speakInterviewerQuestion(nextQuestion), 120);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "AI面接官の開始に失敗しました。");
     } finally {
@@ -683,9 +779,60 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="interviewSession">
-                  <section className="interviewerCard">
-                    <p className="sectionLabel">AI Interviewer</p>
-                    <h3>{interviewOpening || "模擬面接を始めます。"}</h3>
+                  <section className={avatarSpeaking ? "interviewerCard speakingInterviewer" : "interviewerCard"}>
+                    <div className="interviewerStage">
+                      <div className="avatarFrame" aria-hidden="true">
+                        <div className="avatarAura" />
+                        <div className="aiAvatar">
+                          <div className="avatarHair" />
+                          <div className="avatarFace">
+                            <span className="avatarEye leftEye" />
+                            <span className="avatarEye rightEye" />
+                            <span className="avatarMouth" />
+                          </div>
+                          <div className="avatarBody" />
+                        </div>
+                        <div className="speakingBars">
+                          <span />
+                          <span />
+                          <span />
+                        </div>
+                      </div>
+
+                      <div className="interviewerCopy">
+                        <p className="sectionLabel">AI Interviewer Avatar</p>
+                        <h3>{interviewOpening || "模擬面接を始めます。"}</h3>
+                        <p className="avatarStatus">{avatarStatus}</p>
+                        <div className="avatarControls">
+                          <button
+                            className="secondaryButton"
+                            onClick={() => speakInterviewerQuestion()}
+                            disabled={!ttsAvailable || avatarSpeaking}
+                            type="button"
+                          >
+                            質問を読み上げる
+                          </button>
+                          <button
+                            className="secondaryButton"
+                            onClick={stopInterviewerSpeech}
+                            disabled={!avatarSpeaking}
+                            type="button"
+                          >
+                            読み上げ停止
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {!ttsAvailable ? (
+                      <div className="voiceNotice avatarNotice">
+                        <strong>AI面接官の音声読み上げについて</strong>
+                        <span>
+                          このブラウザではText-to-Speechが利用できません。Chrome / Edge / Safariの最新版で試してください。
+                        </span>
+                      </div>
+                    ) : null}
+
                     <div className="questionBubble">{interviewQuestion}</div>
                   </section>
 
