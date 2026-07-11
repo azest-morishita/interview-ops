@@ -1,0 +1,717 @@
+:root {
+  --background: #f6f7fb;
+  --foreground: #111827;
+  --muted: #64748b;
+  --card: rgba(255, 255, 255, 0.86);
+  --card-strong: #ffffff;
+  --border: rgba(15, 23, 42, 0.1);
+  --primary: #5b5cf6;
+  --primary-dark: #3730a3;
+  --accent: #06b6d4;
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --shadow: 0 24px 80px rgba(15, 23, 42, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(91, 92, 246, 0.22), transparent 32rem),
+    radial-gradient(circle at top right, rgba(6, 182, 212, 0.2), transparent 28rem),
+    linear-gradient(180deg, #fbfcff 0%, var(--background) 48%, #eef2ff 100%);
+  color: var(--foreground);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+main {
+  width: min(1440px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 48px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+  gap: 28px;
+  align-items: stretch;
+  min-height: 360px;
+}
+
+.heroCopy,
+.pipelineCard,
+.panel,
+.metricCard {
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.heroCopy {
+  border-radius: 32px;
+  padding: 44px;
+}
+
+.eyebrow,
+.sectionLabel {
+  margin: 0 0 10px;
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 18px;
+  font-size: clamp(3.2rem, 8vw, 7.2rem);
+  line-height: 0.9;
+  letter-spacing: -0.08em;
+}
+
+h2 {
+  margin-bottom: 0;
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+  letter-spacing: -0.04em;
+}
+
+h3 {
+  letter-spacing: -0.03em;
+}
+
+.lead {
+  max-width: 760px;
+  color: #334155;
+  font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+  line-height: 1.8;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.primaryButton,
+.secondaryButton,
+.roleButton {
+  border: 0;
+  border-radius: 999px;
+  font-weight: 800;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.primaryButton {
+  padding: 14px 22px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  box-shadow: 0 16px 32px rgba(91, 92, 246, 0.28);
+}
+
+.secondaryButton {
+  padding: 14px 20px;
+  background: #eef2ff;
+  color: var(--primary-dark);
+}
+
+.dangerButton {
+  border: 0;
+  border-radius: 999px;
+  padding: 14px 20px;
+  background: #fee2e2;
+  color: #991b1b;
+  font-weight: 900;
+}
+
+.wideButton {
+  width: 100%;
+}
+
+.primaryButton:hover,
+.secondaryButton:hover,
+.dangerButton:hover,
+.roleButton:hover {
+  transform: translateY(-1px);
+}
+
+.pipelineCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  overflow: hidden;
+  border-radius: 32px;
+  padding: 36px;
+}
+
+.pipelineCard::before {
+  position: absolute;
+  inset: -20%;
+  content: "";
+  background:
+    linear-gradient(135deg, rgba(91, 92, 246, 0.18), transparent),
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(91, 92, 246, 0.08) 22px 23px);
+  transform: rotate(-8deg);
+}
+
+.pipelineStep,
+.pipelineLine {
+  position: relative;
+  z-index: 1;
+}
+
+.pipelineStep {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  border: 1px solid rgba(91, 92, 246, 0.18);
+  border-radius: 18px;
+  padding: 0 18px;
+  background: rgba(255, 255, 255, 0.76);
+  color: #312e81;
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.pipelineStep.active {
+  background: #111827;
+  color: white;
+}
+
+.pipelineLine {
+  width: 2px;
+  height: 16px;
+  margin-left: 28px;
+  background: linear-gradient(var(--primary), transparent);
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 18px 0;
+}
+
+.metricCard {
+  border-radius: 22px;
+  padding: 20px;
+}
+
+.metricCard span,
+.attemptMeta,
+.hint,
+footer {
+  color: var(--muted);
+}
+
+.metricCard strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 1.65rem;
+  letter-spacing: -0.04em;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.9fr) minmax(0, 1.4fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.panel {
+  border-radius: 28px;
+  padding: 26px;
+}
+
+.inputPanel {
+  position: sticky;
+  top: 16px;
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.badge,
+.scorePill,
+.priority {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.badge {
+  padding: 7px 11px;
+  background: #eef2ff;
+  color: var(--primary-dark);
+}
+
+.scorePill {
+  padding: 9px 13px;
+  color: white;
+}
+
+.scoreGood {
+  background: var(--success);
+}
+
+.scoreWarn {
+  background: var(--warning);
+}
+
+.scoreRisk {
+  background: var(--danger);
+}
+
+.roleSwitch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+  border-radius: 18px;
+  background: #f1f5f9;
+  padding: 6px;
+}
+
+.roleButton {
+  padding: 12px;
+  background: transparent;
+  color: #475569;
+}
+
+.roleButton.selected {
+  background: var(--card-strong);
+  color: var(--primary-dark);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.sessionActions {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 10px;
+  margin: 18px 0 6px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  color: #1e293b;
+  font-weight: 800;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--foreground);
+  outline: none;
+  padding: 13px 14px;
+  font-weight: 500;
+}
+
+textarea {
+  min-height: 104px;
+  resize: vertical;
+  line-height: 1.65;
+}
+
+.answerBox {
+  min-height: 150px;
+}
+
+input:focus,
+textarea:focus {
+  border-color: rgba(91, 92, 246, 0.8);
+  box-shadow: 0 0 0 4px rgba(91, 92, 246, 0.12);
+}
+
+.errorText {
+  margin-top: 14px;
+  color: var(--danger);
+  font-weight: 800;
+}
+
+.emptyState {
+  display: grid;
+  place-items: center;
+  min-height: 500px;
+  border: 1px dashed rgba(91, 92, 246, 0.25);
+  border-radius: 22px;
+  color: var(--muted);
+  text-align: center;
+  padding: 28px;
+}
+
+.emptyIcon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 14px;
+  border-radius: 20px;
+  background: #eef2ff;
+  color: var(--primary);
+  font-size: 1.8rem;
+  font-weight: 900;
+}
+
+.resultStack {
+  display: grid;
+  gap: 18px;
+}
+
+.interviewSession {
+  display: grid;
+  gap: 18px;
+}
+
+.interviewerCard,
+.answerCard,
+.summaryCard,
+.scoreCard,
+.gapCard,
+.issueCard,
+.rewriteCard,
+.attemptCard,
+.traceItem {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.interviewerCard,
+.answerCard,
+.summaryCard,
+.rewriteCard {
+  padding: 22px;
+}
+
+.interviewerCard {
+  background:
+    radial-gradient(circle at top right, rgba(91, 92, 246, 0.16), transparent 18rem),
+    rgba(255, 255, 255, 0.78);
+}
+
+.questionBubble {
+  position: relative;
+  margin-top: 16px;
+  border-radius: 22px;
+  background: #111827;
+  color: white;
+  padding: 22px;
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  font-weight: 900;
+  line-height: 1.7;
+}
+
+.questionBubble::before {
+  position: absolute;
+  bottom: -10px;
+  left: 28px;
+  width: 20px;
+  height: 20px;
+  content: "";
+  background: #111827;
+  transform: rotate(45deg);
+}
+
+.answerHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.recordingBadge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: var(--primary-dark);
+  padding: 7px 11px;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.activeRecording {
+  background: #fee2e2;
+  color: #991b1b;
+  animation: pulse 1.2s infinite;
+}
+
+.voiceNotice {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(217, 119, 6, 0.24);
+  border-radius: 16px;
+  background: #fffbeb;
+  color: #78350f;
+  padding: 14px 16px;
+  line-height: 1.65;
+}
+
+.voiceNotice code {
+  border-radius: 7px;
+  background: rgba(120, 53, 15, 0.08);
+  padding: 2px 5px;
+  font-weight: 800;
+}
+
+.voiceActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.analyzeButton {
+  width: 100%;
+  margin-top: 16px;
+  justify-content: center;
+}
+
+.compactEmpty {
+  min-height: 260px;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.32);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(220, 38, 38, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+  }
+}
+
+.summaryCard h3 {
+  font-size: 1.45rem;
+  line-height: 1.5;
+}
+
+.scoreGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.scoreCard {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px;
+}
+
+.scoreCard h4,
+.gapCard h4,
+.issueCard h4 {
+  margin-bottom: 8px;
+}
+
+.scoreCard p,
+.gapCard p,
+.issueCard p,
+.rewriteCard p,
+.attemptCard p,
+footer p {
+  margin-bottom: 0;
+  color: #475569;
+  line-height: 1.75;
+}
+
+.scoreCard strong {
+  color: var(--primary-dark);
+  font-size: 1.4rem;
+}
+
+.twoColumn {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.gapList,
+.issueList,
+.traceList,
+.attemptList {
+  display: grid;
+  gap: 12px;
+}
+
+.gapCard,
+.issueCard {
+  padding: 16px;
+}
+
+.priority {
+  margin-bottom: 10px;
+  padding: 5px 9px;
+}
+
+.priorityHigh {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.priorityMedium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.priorityLow {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.shortAnswer {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+  border-radius: 16px;
+  background: #f8fafc;
+  padding: 16px;
+  color: #334155;
+  line-height: 1.7;
+}
+
+.traceItem {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 14px;
+  padding: 14px 16px;
+}
+
+.traceItem strong {
+  color: var(--primary-dark);
+}
+
+.traceItem span {
+  color: #475569;
+}
+
+.attemptsPanel {
+  margin-top: 18px;
+}
+
+.attemptCard {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px;
+}
+
+.attemptMeta {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+footer {
+  padding: 30px 8px 0;
+  text-align: center;
+}
+
+@media (max-width: 1120px) {
+  .hero,
+  .workspace,
+  .twoColumn {
+    grid-template-columns: 1fr;
+  }
+
+  .inputPanel {
+    position: static;
+  }
+
+  .metricsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  main {
+    width: min(100% - 20px, 1440px);
+    padding-top: 10px;
+  }
+
+  .heroCopy,
+  .pipelineCard,
+  .panel {
+    border-radius: 22px;
+    padding: 20px;
+  }
+
+  .metricsGrid,
+  .scoreGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .panelHeader,
+  .answerHeader,
+  .attemptCard,
+  .scoreCard {
+    flex-direction: column;
+  }
+
+  .sessionActions {
+    grid-template-columns: 1fr;
+  }
+
+  .traceItem {
+    grid-template-columns: 1fr;
+  }
+}
