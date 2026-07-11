@@ -14,6 +14,7 @@ export type InterviewInput = {
 };
 
 export type PrepDraft = {
+  role?: RoleMode;
   interviewerStyle: string;
   difficulty: string;
   evaluationFocus: string;
@@ -22,6 +23,13 @@ export type PrepDraft = {
   experience: string;
   question: string;
   idealAnswer: string;
+};
+
+export type UploadedJobDocument = {
+  fileName: string;
+  mimeType: "application/pdf" | "text/plain";
+  data?: string;
+  text?: string;
 };
 
 export type ScoreItem = {

@@ -1,13 +1,34 @@
 import { NextResponse } from "next/server";
-import type { InterviewInput, PrepDraft } from "../../types";
+import type { InterviewInput, PrepDraft, UploadedJobDocument } from "../../types";
 
 const GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models";
+
+type PrepDraftRequest = InterviewInput & {
+  sourceDocument?: UploadedJobDocument;
+};
+
+type GeminiPart =
+  | { text: string }
+  | {
+      inline_data: {
+        mime_type: string;
+        data: string;
+      };
+    };
+
+function hasSupportedDocument(document?: UploadedJobDocument) {
+  return (
+    document?.mimeType === "application/pdf" ||
+    document?.mimeType === "text/plain"
+  );
+}
 
 function fallbackDraft(input: InterviewInput): PrepDraft {
   const isEngineer = input.role === "engineer";
 
   if (isEngineer) {
     return {
+      role: "engineer",
       interviewerStyle:
         input.interviewerStyle ||
         "深掘り重視。候補者の技術選定理由、設計判断、障害対応、成果指標を具体的に確認する面接官。",
@@ -26,6 +47,7 @@ function fallbackDraft(input: InterviewInput): PrepDraft {
   }
 
   return {
+    role: "consultant",
     interviewerStyle:
       input.interviewerStyle ||
       "論理構成とビジネスインパクトを重視し、課題設定と合意形成を深掘りするITコンサル面接官。",
@@ -56,11 +78,33 @@ function extractJson(text: string): unknown {
   return JSON.parse(raw.slice(first, last + 1));
 }
 
-function buildPrompt(input: InterviewInput) {
+function buildSourceDocumentPrompt(input: PrepDraftRequest) {
+  const document = input.sourceDocument;
+
+  if (!hasSupportedDocument(document)) {
+    return "求人票ファイル: なし";
+  }
+
+  if (document?.mimeType === "application/pdf") {
+    return `求人票ファイル:
+ファイル名: ${document.fileName}
+形式: PDF
+このリクエストに添付されたPDFを求人票・募集要項として解析してください。`;
+  }
+
+  return `求人票ファイル:
+ファイル名: ${document?.fileName}
+形式: TXT
+本文:
+${document?.text?.slice(0, 60000) || ""}`;
+}
+
+function buildPrompt(input: PrepDraftRequest) {
   const roleLabel = input.role === "engineer" ? "エンジニア" : "ITコンサル";
 
   return `あなたは面接対策サービスInterviewOpsの準備支援AIです。
 ユーザーが入力した職種や想定ポジションをもとに、模擬面接に使う「AI面接官のタイプ・難易度・重点評価観点・求人票・経験概要・練習質問・理想回答」の下書きを作ってください。
+求人票PDFまたはTXTが添付されている場合は、その内容を最優先で解析してください。
 
 職種:
 ${roleLabel}
@@ -80,6 +124,8 @@ ${input.evaluationFocus}
 既存の求人票・募集要項:
 ${input.jobDescription}
 
+${buildSourceDocumentPrompt(input)}
+
 既存の経験概要:
 ${input.experience}
 
@@ -91,6 +137,7 @@ ${input.idealAnswer}
 
 必ず以下のJSONのみを返してください。Markdownや説明文は不要です。
 {
+  "role": "engineer または consultant",
   "interviewerStyle": "AI面接官のタイプ",
   "difficulty": "難易度",
   "evaluationFocus": "重点評価観点",
@@ -102,7 +149,9 @@ ${input.idealAnswer}
 }
 
 制約:
+- 求人票から職種を判定し、エンジニア系なら "engineer"、ITコンサル・PMO・DX推進・業務改革系なら "consultant" を返す
 - 実在企業名は出さず、汎用的な想定企業にする
+- 求人票ファイルがある場合は、職種、想定ポジション、求人票、面接官タイプ、重点評価観点を求人票から具体的に抽出・要約する
 - AI面接官のタイプは、面接官の振る舞い・深掘り方針が分かる文章にする
 - 難易度は「やさしめ」「通常」「通常面接より少し厳しめ」「最終面接レベルで厳しめ」「ケース面接寄りに少し厳しめ」のいずれかに近い表現にする
 - 重点評価観点はカンマ区切りの短い観点リストにする
@@ -116,8 +165,10 @@ ${input.idealAnswer}
 function normalizeDraft(value: unknown, input: InterviewInput): PrepDraft {
   const fallback = fallbackDraft(input);
   const data = value as Partial<PrepDraft>;
+  const role = data.role === "engineer" || data.role === "consultant" ? data.role : fallback.role;
 
   return {
+    role,
     interviewerStyle: data.interviewerStyle || fallback.interviewerStyle,
     difficulty: data.difficulty || fallback.difficulty,
     evaluationFocus: data.evaluationFocus || fallback.evaluationFocus,
@@ -129,8 +180,26 @@ function normalizeDraft(value: unknown, input: InterviewInput): PrepDraft {
   };
 }
 
+function buildGeminiParts(input: PrepDraftRequest): GeminiPart[] {
+  const parts: GeminiPart[] = [];
+  const document = input.sourceDocument;
+
+  if (document?.mimeType === "application/pdf" && document.data) {
+    parts.push({
+      inline_data: {
+        mime_type: "application/pdf",
+        data: document.data
+      }
+    });
+  }
+
+  parts.push({ text: buildPrompt(input) });
+
+  return parts;
+}
+
 export async function POST(request: Request) {
-  const input = (await request.json()) as InterviewInput;
+  const input = (await request.json()) as PrepDraftRequest;
   const apiKey = process.env.GEMINI_API_KEY;
   const model = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 
@@ -151,7 +220,7 @@ export async function POST(request: Request) {
         contents: [
           {
             role: "user",
-            parts: [{ text: buildPrompt(input) }]
+            parts: buildGeminiParts(input)
           }
         ],
         generationConfig: {

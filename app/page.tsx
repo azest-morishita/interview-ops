@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { roleDescriptions, roleLabels, sampleInputs } from "./lib/samples";
-import type { AnalysisResult, Attempt, InterviewInput, PrepDraft, RoleMode } from "./types";
+import type { AnalysisResult, Attempt, InterviewInput, PrepDraft, RoleMode, UploadedJobDocument } from "./types";
 
 type StepId = "interviewer" | "ideal" | "interview";
 
@@ -56,6 +56,8 @@ const steps: Array<{ id: StepId; title: string; description: string }> = [
   }
 ];
 
+const MAX_JOB_DOCUMENT_BYTES = 8 * 1024 * 1024;
+
 function scoreTone(score: number) {
   if (score >= 82) return "scoreGood";
   if (score >= 65) return "scoreWarn";
@@ -81,6 +83,8 @@ export default function Home() {
   const [interviewQuestion, setInterviewQuestion] = useState(input.question);
   const [recording, setRecording] = useState(false);
   const [error, setError] = useState("");
+  const [jobDocument, setJobDocument] = useState<UploadedJobDocument | null>(null);
+  const [jobDocumentStatus, setJobDocumentStatus] = useState("");
   const [responseMode, setResponseMode] = useState<"gemini" | "fallback" | null>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
@@ -133,6 +137,24 @@ export default function Home() {
     setError("");
   }
 
+  function readAsDataUrl(file: File) {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(new Error("ファイルの読み込みに失敗しました。"));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function readAsText(file: File) {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(new Error("ファイルの読み込みに失敗しました。"));
+      reader.readAsText(file);
+    });
+  }
+
   async function startInterview() {
     setInterviewStarting(true);
     setError("");
@@ -166,7 +188,7 @@ export default function Home() {
     }
   }
 
-  async function generatePrepDraft() {
+  async function generatePrepDraft(sourceDocument = jobDocument) {
     setDraftingPrep(true);
     setError("");
 
@@ -174,7 +196,10 @@ export default function Home() {
       const response = await fetch("/api/prep-draft", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(input)
+        body: JSON.stringify({
+          ...input,
+          sourceDocument: sourceDocument ?? undefined
+        })
       });
 
       const payload = await response.json();
@@ -186,6 +211,7 @@ export default function Home() {
       const draft = payload.result as PrepDraft;
       setInput((current) => ({
         ...current,
+        role: draft.role || current.role,
         interviewerStyle: draft.interviewerStyle,
         difficulty: draft.difficulty,
         evaluationFocus: draft.evaluationFocus,
@@ -199,10 +225,64 @@ export default function Home() {
       setSessionStarted(false);
       setResult(null);
       setResponseMode(payload.mode);
+      if (sourceDocument) {
+        setJobDocumentStatus(
+          payload.mode === "gemini"
+            ? "求人票ファイルからAI解析して反映しました。"
+            : "Gemini APIに接続できないため、デモ用の下書きを反映しました。"
+        );
+      }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "面接準備の下書き生成に失敗しました。");
     } finally {
       setDraftingPrep(false);
+    }
+  }
+
+  async function handleJobDocumentUpload(file: File | undefined) {
+    if (!file) return;
+
+    setError("");
+    setJobDocumentStatus("");
+
+    const lowerName = file.name.toLowerCase();
+    const isPdf = file.type === "application/pdf" || lowerName.endsWith(".pdf");
+    const isText =
+      file.type === "text/plain" ||
+      lowerName.endsWith(".txt") ||
+      lowerName.endsWith(".md");
+
+    if (!isPdf && !isText) {
+      setError("求人票ファイルはPDFまたはTXTのみ対応しています。");
+      return;
+    }
+
+    if (file.size > MAX_JOB_DOCUMENT_BYTES) {
+      setError("求人票ファイルは8MB以下にしてください。大きいPDFは要約版やTXT化したものを使うと安定します。");
+      return;
+    }
+
+    try {
+      setJobDocumentStatus(`${file.name} を読み込み中...`);
+
+      const document: UploadedJobDocument = isPdf
+        ? {
+            fileName: file.name,
+            mimeType: "application/pdf",
+            data: (await readAsDataUrl(file)).split(",")[1] || ""
+          }
+        : {
+            fileName: file.name,
+            mimeType: "text/plain",
+            text: (await readAsText(file)).slice(0, 60000)
+          };
+
+      setJobDocument(document);
+      setJobDocumentStatus(`${file.name} をAI解析中...`);
+      await generatePrepDraft(document);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "求人票ファイルの解析に失敗しました。");
+      setJobDocumentStatus("");
     }
   }
 
@@ -407,6 +487,30 @@ export default function Home() {
                 <span className="badge">Interviewer Agent</span>
               </div>
 
+              <div className="jobUploadCard">
+                <div>
+                  <p className="sectionLabel">Job Description Parser</p>
+                  <h3>求人票PDF / TXTから面接設定を作る</h3>
+                  <p>
+                    求人票をアップロードすると、職種、想定ポジション、面接官タイプ、難易度、重点評価観点、練習質問、理想回答の下書きまでAIが入力します。
+                  </p>
+                  {jobDocument ? (
+                    <span className="sourceChip">読み込み済み: {jobDocument.fileName}</span>
+                  ) : null}
+                  {jobDocumentStatus ? <p className="uploadStatus">{jobDocumentStatus}</p> : null}
+                </div>
+                <label className="fileDropLabel">
+                  <input
+                    className="fileInput"
+                    type="file"
+                    accept=".pdf,.txt,.md,application/pdf,text/plain"
+                    onChange={(event) => handleJobDocumentUpload(event.target.files?.[0])}
+                  />
+                  <span>{draftingPrep ? "AI解析中..." : "求人票をアップロード"}</span>
+                  <small>PDF / TXT・8MBまで</small>
+                </label>
+              </div>
+
               <div className="draftAssistCard">
                 <div>
                   <p className="sectionLabel">AI Suggest</p>
@@ -415,7 +519,7 @@ export default function Home() {
                     職種と想定ポジションをもとに、面接官の振る舞い、難易度、重点評価観点を自動で作ります。
                   </p>
                 </div>
-                <button className="primaryButton" onClick={generatePrepDraft} disabled={draftingPrep}>
+                <button className="primaryButton" onClick={() => generatePrepDraft()} disabled={draftingPrep}>
                   {draftingPrep ? "AIが提案中..." : "面接官設定をAIで作る"}
                 </button>
               </div>
@@ -494,7 +598,7 @@ export default function Home() {
                     Step 1の面接官設定と想定ポジションをもとに、面接官タイプ・評価観点・求人票・経験概要・質問・理想回答をまとめて生成します。
                   </p>
                 </div>
-                <button className="primaryButton" onClick={generatePrepDraft} disabled={draftingPrep}>
+                <button className="primaryButton" onClick={() => generatePrepDraft()} disabled={draftingPrep}>
                   {draftingPrep ? "AIが下書き中..." : "面接準備をAIで入力"}
                 </button>
               </div>

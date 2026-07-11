@@ -396,6 +396,89 @@ footer {
   line-height: 1.7;
 }
 
+.jobUploadCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.36fr);
+  gap: 18px;
+  align-items: stretch;
+  border: 1px solid rgba(91, 92, 246, 0.18);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at bottom left, rgba(91, 92, 246, 0.14), transparent 15rem),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(238, 242, 255, 0.72));
+  padding: 22px;
+}
+
+.jobUploadCard h3 {
+  margin-bottom: 8px;
+}
+
+.jobUploadCard p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.fileDropLabel {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-height: 152px;
+  margin-top: 0;
+  border: 1px dashed rgba(91, 92, 246, 0.44);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--primary-dark);
+  padding: 20px;
+  text-align: center;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.fileDropLabel:hover {
+  transform: translateY(-1px);
+  border-color: rgba(6, 182, 212, 0.72);
+  background: #ffffff;
+}
+
+.fileDropLabel span {
+  font-size: 1.02rem;
+  font-weight: 900;
+}
+
+.fileDropLabel small {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.fileInput {
+  display: none;
+}
+
+.sourceChip,
+.uploadStatus {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.sourceChip {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #e0f2fe;
+  color: #075985;
+}
+
+.uploadStatus {
+  margin: 10px 0 0;
+  padding: 8px 12px;
+  background: #fef3c7;
+  color: #92400e;
+}
+
 .formGrid {
   display: grid;
   gap: 4px;
@@ -946,6 +1029,10 @@ footer {
   .metricsGrid,
   .scoreGrid,
   .agentRail {
+    grid-template-columns: 1fr;
+  }
+
+  .jobUploadCard {
     grid-template-columns: 1fr;
   }
 
