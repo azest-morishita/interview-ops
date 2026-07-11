@@ -2,12 +2,26 @@ export type RoleMode = "engineer" | "consultant";
 
 export type InterviewInput = {
   role: RoleMode;
+  interviewerStyle: string;
+  difficulty: string;
+  evaluationFocus: string;
   targetPosition: string;
   jobDescription: string;
   experience: string;
   question: string;
   idealAnswer: string;
   userAnswer: string;
+};
+
+export type PrepDraft = {
+  interviewerStyle: string;
+  difficulty: string;
+  evaluationFocus: string;
+  targetPosition: string;
+  jobDescription: string;
+  experience: string;
+  question: string;
+  idealAnswer: string;
 };
 
 export type ScoreItem = {

@@ -15,6 +15,9 @@ export const roleDescriptions: Record<RoleMode, string> = {
 export const sampleInputs: Record<RoleMode, InterviewInput> = {
   engineer: {
     role: "engineer",
+    interviewerStyle: "深掘り重視。候補者の技術選定理由、設計判断、障害対応の再現性を確認する面接官。",
+    difficulty: "通常面接より少し厳しめ",
+    evaluationFocus: "技術選定理由、設計判断、障害対応、DevOps理解、成果指標、自分の役割",
     targetPosition: "SaaS企業のWebアプリケーションエンジニア",
     jobDescription:
       "BtoB SaaSの開発チームで、Next.js / Node.js / Google Cloudを用いた機能開発、CI/CD改善、障害対応、パフォーマンス改善を担当するポジション。",
@@ -29,6 +32,9 @@ export const sampleInputs: Record<RoleMode, InterviewInput> = {
   },
   consultant: {
     role: "consultant",
+    interviewerStyle: "論理構成とビジネスインパクトを深掘りする、落ち着いたITコンサル面接官。",
+    difficulty: "ケース面接寄りに少し厳しめ",
+    evaluationFocus: "課題設定、仮説思考、ステークホルダー調整、業務理解、ROI、プロジェクト推進力",
     targetPosition: "製造業向けDXプロジェクトのITコンサルタント",
     jobDescription:
       "クライアントの業務課題を整理し、システム化構想、要件定義、関係者調整、導入計画策定をリードするポジション。",

@@ -44,6 +44,15 @@ ${input.jobDescription}
 候補者の経験概要:
 ${input.experience}
 
+面接官の設定:
+${input.interviewerStyle}
+
+難易度:
+${input.difficulty}
+
+重点評価観点:
+${input.evaluationFocus}
+
 ユーザーが練習したい質問:
 ${input.question}
 
@@ -65,7 +74,7 @@ ${input.question}
 export async function POST(request: Request) {
   const input = (await request.json()) as InterviewInput;
   const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+  const model = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 
   if (!apiKey) {
     return NextResponse.json({
