@@ -56,6 +56,77 @@ main {
   padding: 32px 0 48px;
 }
 
+.authShell {
+  display: grid;
+  min-height: calc(100vh - 80px);
+  place-items: center;
+}
+
+.authCard {
+  width: min(620px, 100%);
+  border: 1px solid var(--border);
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at top right, rgba(6, 182, 212, 0.18), transparent 18rem),
+    var(--card);
+  box-shadow: var(--shadow);
+  padding: clamp(28px, 6vw, 52px);
+  backdrop-filter: blur(18px);
+}
+
+.authCard h1 {
+  font-size: clamp(3rem, 8vw, 5.8rem);
+}
+
+.authButton {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.authNote {
+  margin: 16px 0 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.launchShell {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: clamp(18px, 4vw, 42px);
+  min-height: calc(100vh - 80px);
+  align-content: center;
+}
+
+.launchButton {
+  min-height: clamp(220px, 34vw, 420px);
+  border: 1px solid rgba(91, 92, 246, 0.18);
+  border-radius: clamp(28px, 4vw, 48px);
+  background:
+    radial-gradient(circle at 80% 10%, rgba(6, 182, 212, 0.22), transparent 22rem),
+    radial-gradient(circle at 10% 90%, rgba(91, 92, 246, 0.18), transparent 20rem),
+    rgba(255, 255, 255, 0.86);
+  color: var(--foreground);
+  box-shadow: var(--shadow);
+  font-size: clamp(2.6rem, 8vw, 6.8rem);
+  font-weight: 1000;
+  letter-spacing: -0.08em;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.launchButton:hover:not(:disabled) {
+  transform: translateY(-3px);
+  border-color: rgba(91, 92, 246, 0.42);
+  box-shadow: 0 28px 70px rgba(15, 23, 42, 0.18);
+}
+
+.launchButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
@@ -330,6 +401,58 @@ footer {
   align-items: start;
 }
 
+.registrationTop {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 18px;
+  justify-items: stretch;
+}
+
+.appTopBar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.registrationStepper {
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  justify-self: start;
+  width: min(100%, 980px);
+}
+
+.registrationStepper .wizardStep {
+  grid-template-columns: auto 1fr;
+  align-items: start;
+}
+
+.registrationStepper .wizardStep span {
+  min-width: 72px;
+  width: auto;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.registrationFlow {
+  display: grid;
+  gap: 18px;
+}
+
+.registrationSavePanel {
+  padding: 22px;
+}
+
+.finalSaveCard {
+  display: grid;
+  gap: 14px;
+  border: 1px solid rgba(91, 92, 246, 0.18);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(6, 182, 212, 0.12), transparent 14rem),
+    rgba(255, 255, 255, 0.82);
+  padding: 18px;
+}
+
 .flowSummary {
   position: sticky;
   top: 16px;
@@ -362,6 +485,293 @@ footer {
   color: #1e293b;
   font-weight: 800;
   line-height: 1.6;
+}
+
+.accountCard {
+  display: grid;
+  gap: 4px;
+  margin-top: 18px;
+  border: 1px solid rgba(91, 92, 246, 0.12);
+  border-radius: 18px;
+  background: rgba(238, 242, 255, 0.7);
+  padding: 14px;
+}
+
+.accountCard span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.accountCard strong {
+  overflow-wrap: anywhere;
+  color: var(--primary-dark);
+}
+
+.companyManager {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+  border: 1px solid rgba(6, 182, 212, 0.16);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(6, 182, 212, 0.12), transparent 14rem),
+    rgba(255, 255, 255, 0.7);
+  padding: 16px;
+}
+
+.companyManagerHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.companyManagerHeader h3 {
+  margin-bottom: 0;
+}
+
+.miniButton {
+  padding: 9px 13px;
+  font-size: 0.86rem;
+}
+
+.tinyButton {
+  padding: 8px 11px;
+  font-size: 0.78rem;
+}
+
+.companyModeGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.companyModeCard {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  border: 1px solid rgba(91, 92, 246, 0.16);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at top right, rgba(6, 182, 212, 0.13), transparent 12rem),
+    rgba(255, 255, 255, 0.82);
+  color: var(--foreground);
+  padding: 16px;
+  text-align: left;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.companyModeCard:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(91, 92, 246, 0.4);
+  box-shadow: 0 14px 28px rgba(91, 92, 246, 0.14);
+}
+
+.companyModeCard span {
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 1000;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.companyModeCard strong {
+  font-size: 1.05rem;
+}
+
+.companyModeCard p,
+.companyModeCard small {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.companyModeCard p {
+  font-weight: 800;
+}
+
+.companyModeCard small {
+  font-weight: 1000;
+}
+
+.companyEditor,
+.companySearchBox {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.68);
+  padding: 12px;
+}
+
+.companyEditorHeader,
+.companyPager {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.companyEditorHeader div {
+  display: grid;
+  gap: 3px;
+}
+
+.companyEditorHeader span,
+.companySearchBox small,
+.companyPager span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.companyEditorHeader strong {
+  overflow-wrap: anywhere;
+}
+
+.saveScopeCard {
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(91, 92, 246, 0.14);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at top right, rgba(91, 92, 246, 0.12), transparent 12rem),
+    #f8fafc;
+  padding: 12px;
+}
+
+.saveScopeCard span {
+  color: var(--primary-dark);
+  font-size: 0.82rem;
+  font-weight: 1000;
+}
+
+.saveScopeCard p,
+.saveScopeCard ul {
+  margin: 0;
+  color: #475569;
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1.65;
+}
+
+.saveScopeCard ul {
+  padding-left: 1.1rem;
+}
+
+.companyStatus {
+  margin: 0;
+  border-radius: 14px;
+  background: #f0f9ff;
+  color: #075985;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+.companyHint {
+  margin: -4px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.55;
+}
+
+.companyList {
+  display: grid;
+  gap: 10px;
+  max-height: 360px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.companyItem {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--foreground);
+  padding: 12px;
+  text-align: left;
+}
+
+.companyItem strong {
+  overflow-wrap: anywhere;
+}
+
+.companyItem span,
+.companyItem small,
+.emptyCompanyList {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.companyItem small {
+  font-weight: 900;
+}
+
+.companyActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.companyPager div {
+  display: flex;
+  gap: 8px;
+}
+
+.activeCompanyItem {
+  border-color: rgba(91, 92, 246, 0.45);
+  background: #eef2ff;
+}
+
+.selectedPlanEditor {
+  display: grid;
+  gap: 18px;
+  border: 1px solid rgba(91, 92, 246, 0.16);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(91, 92, 246, 0.12), transparent 18rem),
+    rgba(255, 255, 255, 0.86);
+  padding: 22px;
+}
+
+.selectedPlanHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.selectedPlanHeader h3,
+.selectedPlanHeader p {
+  margin: 0;
+}
+
+.selectedPlanHeader h3 {
+  font-size: clamp(1.35rem, 2vw, 2rem);
+}
+
+.selectedPlanHeader p:not(.sectionLabel) {
+  margin-top: 8px;
+  color: var(--muted);
+  font-weight: 800;
+  line-height: 1.7;
+}
+
+.emptyCompanyList {
+  margin: 0;
+  font-weight: 800;
 }
 
 .flowMain {
@@ -489,6 +899,142 @@ footer {
   justify-content: flex-end;
   gap: 12px;
   margin-top: 12px;
+}
+
+.leftStepActions {
+  justify-content: flex-start;
+}
+
+.splitStepActions {
+  justify-content: space-between;
+}
+
+.interviewItemsEditor {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 14px;
+  border: 1px solid rgba(91, 92, 246, 0.16);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(91, 92, 246, 0.12), transparent 16rem),
+    rgba(255, 255, 255, 0.76);
+  padding: 18px;
+}
+
+.interviewItemsHeader,
+.interviewItemEditorHeader,
+.interviewRunConfig,
+.nextQuestionCard {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.interviewItemsHeader h3,
+.interviewItemsHeader p,
+.interviewRunConfig h3,
+.interviewRunConfig p,
+.nextQuestionCard h3,
+.nextQuestionCard p {
+  margin: 0;
+}
+
+.interviewItemsHeader p:not(.sectionLabel),
+.interviewRunConfig p:not(.sectionLabel),
+.nextQuestionCard p:not(.sectionLabel) {
+  margin-top: 6px;
+  color: var(--muted);
+  font-weight: 800;
+  line-height: 1.65;
+}
+
+.interviewItemTabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.interviewItemTab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 180px;
+  border: 1px solid rgba(91, 92, 246, 0.14);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--foreground);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.interviewItemTab span {
+  display: inline-grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: var(--primary-dark);
+  font-size: 0.8rem;
+  font-weight: 1000;
+}
+
+.interviewItemTab strong {
+  overflow: hidden;
+  font-size: 0.86rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.activeInterviewItemTab {
+  border-color: rgba(91, 92, 246, 0.46);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+}
+
+.activeInterviewItemTab span {
+  background: rgba(255, 255, 255, 0.22);
+  color: white;
+}
+
+.interviewItemEditor {
+  display: grid;
+  gap: 12px;
+}
+
+.interviewRunConfig,
+.nextQuestionCard {
+  border: 1px solid rgba(6, 182, 212, 0.18);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(6, 182, 212, 0.14), transparent 15rem),
+    rgba(255, 255, 255, 0.82);
+  padding: 18px;
+}
+
+.orderSwitch {
+  display: inline-flex;
+  gap: 4px;
+  border-radius: 999px;
+  background: #eef2ff;
+  padding: 5px;
+}
+
+.orderSwitch button {
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  padding: 9px 14px;
+  font-weight: 1000;
+}
+
+.orderSwitch .selectedOrderMode {
+  background: #fff;
+  color: var(--primary-dark);
+  box-shadow: 0 8px 22px rgba(91, 92, 246, 0.14);
 }
 
 .improvementCard {
@@ -1213,6 +1759,14 @@ footer {
   main {
     width: min(100% - 20px, 1440px);
     padding-top: 10px;
+  }
+
+  .launchShell {
+    grid-template-columns: 1fr;
+  }
+
+  .registrationStepper {
+    grid-template-columns: 1fr;
   }
 
   .heroCopy,

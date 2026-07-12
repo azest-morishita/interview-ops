@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createFallbackAnalysis } from "../../lib/fallback";
+import { requireAuthenticatedUser } from "../../lib/server-auth";
 import type { AnalysisResult, InterviewInput } from "../../types";
 
 const GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models";
@@ -173,6 +174,9 @@ function normalizeResult(value: unknown, input: InterviewInput): AnalysisResult 
 }
 
 export async function POST(request: Request) {
+  const auth = await requireAuthenticatedUser(request);
+  if ("response" in auth) return auth.response;
+
   const input = (await request.json()) as InterviewInput;
 
   if (!input.userAnswer?.trim()) {

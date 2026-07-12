@@ -1,5 +1,12 @@
 export type RoleMode = "engineer" | "consultant";
 
+export type InterviewItem = {
+  id: string;
+  title: string;
+  question: string;
+  idealAnswer: string;
+};
+
 export type InterviewInput = {
   role: RoleMode;
   interviewerStyle: string;
@@ -11,6 +18,7 @@ export type InterviewInput = {
   question: string;
   idealAnswer: string;
   userAnswer: string;
+  interviewItems?: InterviewItem[];
 };
 
 export type PrepDraft = {
@@ -75,9 +83,21 @@ export type AnalysisResult = {
 export type Attempt = {
   id: number;
   role: RoleMode;
+  itemTitle?: string;
   question: string;
   score: number;
   summary: string;
   createdAt: string;
   issues: NextIssue[];
+};
+
+export type SavedCompany = {
+  id: string;
+  saveKey?: string;
+  companyName: string;
+  input: InterviewInput;
+  attemptsCount: number;
+  latestScore: number | null;
+  createdAt?: string;
+  updatedAt?: string;
 };
