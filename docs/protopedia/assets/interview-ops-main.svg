@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="495" viewBox="0 0 880 495" role="img" aria-label="InterviewOps main visual">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eef2ff"/>
+      <stop offset="55%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#cffafe"/>
+    </linearGradient>
+    <linearGradient id="primary" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#5b5cf6"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#0f172a" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <rect width="880" height="495" rx="36" fill="url(#bg)"/>
+  <circle cx="760" cy="70" r="120" fill="#22d3ee" opacity="0.18"/>
+  <circle cx="125" cy="430" r="135" fill="#6366f1" opacity="0.15"/>
+
+  <g filter="url(#shadow)">
+    <rect x="48" y="48" width="470" height="360" rx="32" fill="#ffffff" opacity="0.96"/>
+  </g>
+  <text x="78" y="97" fill="#5b5cf6" font-family="Arial, sans-serif" font-size="17" font-weight="800" letter-spacing="4">DEVOPS × AI AGENT</text>
+  <text x="76" y="176" fill="#0f172a" font-family="Arial, sans-serif" font-size="72" font-weight="900">InterviewOps</text>
+  <text x="80" y="222" fill="#334155" font-family="Arial, sans-serif" font-size="23" font-weight="700">模擬面接をCI/CDするAI面接官エージェント</text>
+
+  <g transform="translate(80 268)">
+    <rect width="176" height="50" rx="25" fill="url(#primary)"/>
+    <text x="88" y="33" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="19" font-weight="800">登録</text>
+    <rect x="192" width="176" height="50" rx="25" fill="#eef2ff"/>
+    <text x="280" y="33" text-anchor="middle" fill="#3730a3" font-family="Arial, sans-serif" font-size="19" font-weight="800">模擬面接</text>
+  </g>
+
+  <g transform="translate(80 350)">
+    <rect width="95" height="32" rx="16" fill="#ecfeff"/>
+    <text x="47.5" y="22" text-anchor="middle" fill="#0891b2" font-family="Arial, sans-serif" font-size="14" font-weight="800">Gemini</text>
+    <rect x="108" width="95" height="32" rx="16" fill="#eef2ff"/>
+    <text x="155.5" y="22" text-anchor="middle" fill="#4f46e5" font-family="Arial, sans-serif" font-size="14" font-weight="800">Cloud Run</text>
+    <rect x="216" width="95" height="32" rx="16" fill="#fff7ed"/>
+    <text x="263.5" y="22" text-anchor="middle" fill="#ea580c" font-family="Arial, sans-serif" font-size="14" font-weight="800">Firebase</text>
+  </g>
+
+  <g filter="url(#shadow)" transform="translate(566 62)">
+    <rect width="250" height="345" rx="32" fill="#0f172a"/>
+    <circle cx="125" cy="94" r="58" fill="#e0f2fe"/>
+    <path d="M99 92c0-19 12-33 28-33s28 14 28 33v14c0 20-12 35-28 35s-28-15-28-35z" fill="#ffffff"/>
+    <circle cx="111" cy="96" r="5" fill="#0f172a"/>
+    <circle cx="143" cy="96" r="5" fill="#0f172a"/>
+    <path d="M114 119c12 9 26 9 38 0" fill="none" stroke="#0f172a" stroke-width="5" stroke-linecap="round"/>
+    <rect x="42" y="184" width="166" height="38" rx="19" fill="#ffffff"/>
+    <text x="125" y="209" text-anchor="middle" fill="#0f172a" font-family="Arial, sans-serif" font-size="16" font-weight="800">AI Interviewer</text>
+    <rect x="42" y="238" width="166" height="38" rx="19" fill="#1e293b"/>
+    <text x="125" y="263" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="15" font-weight="800">Question → Answer</text>
+    <rect x="42" y="292" width="166" height="38" rx="19" fill="#1e293b"/>
+    <text x="125" y="317" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="15" font-weight="800">Score / Diff / Issue</text>
+  </g>
+</svg>
