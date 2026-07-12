@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut, type User } from "firebase/auth";
-import { getClientAuth, hasFirebaseClientConfig } from "./lib/firebase-client";
+import { getClientAuth } from "./lib/firebase-client";
 import { roleDescriptions, roleLabels, sampleInputs } from "./lib/samples";
 import type {
   AnalysisResult,
@@ -242,44 +242,59 @@ export default function Home() {
   const voiceAvailable = speechSupported && isSecureForVoice;
 
   useEffect(() => {
-    if (!hasFirebaseClientConfig()) {
-      setAuthLoading(false);
-      setAuthError("Firebaseクライアント設定が未設定です。.envを確認してください。");
-      return;
-    }
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
 
-    const auth = getClientAuth();
-    return onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        setAuthUser(null);
-        setAuthLoading(false);
-        return;
-      }
-
+    async function initializeAuth() {
       try {
-        const token = await user.getIdToken();
-        const response = await fetch("/api/session", {
-          headers: {
-            Authorization: `Bearer ${token}`
+        const auth = await getClientAuth();
+
+        if (cancelled) return;
+
+        unsubscribe = onAuthStateChanged(auth, async (user) => {
+          if (!user) {
+            setAuthUser(null);
+            setAuthLoading(false);
+            return;
+          }
+
+          try {
+            const token = await user.getIdToken();
+            const response = await fetch("/api/session", {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            });
+            const payload = await response.json();
+
+            if (!response.ok) {
+              throw new Error(payload.error || "このアカウントは利用できません。");
+            }
+
+            setAuthUser(user);
+            setAuthError("");
+          } catch (caught) {
+            console.error(caught);
+            setAuthUser(null);
+            setAuthError(caught instanceof Error ? caught.message : "このアカウントは利用できません。");
+            await signOut(auth);
+          } finally {
+            setAuthLoading(false);
           }
         });
-        const payload = await response.json();
-
-        if (!response.ok) {
-          throw new Error(payload.error || "このアカウントは利用できません。");
-        }
-
-        setAuthUser(user);
-        setAuthError("");
       } catch (caught) {
         console.error(caught);
-        setAuthUser(null);
-        setAuthError(caught instanceof Error ? caught.message : "このアカウントは利用できません。");
-        await signOut(auth);
-      } finally {
         setAuthLoading(false);
+        setAuthError("Firebaseクライアント設定が未設定です。Cloud Runの環境変数を確認してください。");
       }
-    });
+    }
+
+    initializeAuth();
+
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, []);
 
   useEffect(() => {
@@ -341,7 +356,7 @@ export default function Home() {
     setAuthError("");
 
     try {
-      const auth = getClientAuth();
+      const auth = await getClientAuth();
       await signInWithEmailAndPassword(auth, authEmail.trim(), authPassword);
       setAuthPassword("");
     } catch (caught) {
@@ -354,7 +369,7 @@ export default function Home() {
 
   async function handleSignOut() {
     stopInterviewerSpeech();
-    const auth = getClientAuth();
+    const auth = await getClientAuth();
     await signOut(auth);
   }
 
